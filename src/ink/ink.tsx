@@ -5,7 +5,7 @@ import throttle from 'lodash-es/throttle.js';
 import React, { type ReactNode } from 'react';
 import type { FiberRoot } from 'react-reconciler';
 import { ConcurrentRoot } from 'react-reconciler/constants.js';
-import { onExit } from 'signal-exit';
+import onExit from 'signal-exit';
 import { flushInteractionTime } from 'src/bootstrap/state.js';
 import { getYogaCounters } from 'src/native-ts/yoga-layout/index.js';
 import { logForDebugging } from 'src/utils/debug.js';
@@ -38,6 +38,13 @@ import { CURSOR_HOME, cursorMove, cursorPosition, DISABLE_KITTY_KEYBOARD, DISABL
 import { DBP, DFE, DISABLE_MOUSE_TRACKING, ENABLE_MOUSE_TRACKING, ENTER_ALT_SCREEN, EXIT_ALT_SCREEN, SHOW_CURSOR } from './termio/dec.js';
 import { CLEAR_ITERM2_PROGRESS, CLEAR_TAB_STATUS, setClipboard, supportsTabStatus, wrapForMultiplexer } from './termio/osc.js';
 import { TerminalWriteProvider } from './useTerminalNotification.js';
+
+const INK_DEBUG = process.env.AGENT_CLI_DEBUG_STARTUP === '1';
+function debugInk(message: string): void {
+  if (INK_DEBUG) {
+    process.stderr.write(`[ink] ${message}\n`);
+  }
+}
 
 // Alt-screen: renderer.ts sets cursor.visible = !isTTY || screen.height===0,
 // which is always false in alt-screen (TTY + content fills screen).
@@ -178,10 +185,13 @@ export default class Ink {
     y: number;
   } | null = null;
   constructor(private readonly options: Options) {
+    debugInk('constructor start');
     autoBind(this);
     if (this.options.patchConsole) {
+      debugInk('patchConsole start');
       this.restoreConsole = this.patchConsole();
       this.restoreStderr = this.patchStderr();
+      debugInk('patchConsole complete');
     }
     this.terminal = {
       stdout: options.stdout,
@@ -214,6 +224,7 @@ export default class Ink {
       leading: true,
       trailing: true
     });
+    debugInk('scheduleRender complete');
 
     // Ignore last render after unmounting a tree to prevent empty output before exit
     this.isUnmounted = false;
@@ -222,6 +233,7 @@ export default class Ink {
     this.unsubscribeExit = onExit(this.unmount, {
       alwaysLast: false
     });
+    debugInk('onExit complete');
     if (options.stdout.isTTY) {
       options.stdout.on('resize', this.handleResize);
       process.on('SIGCONT', this.handleResume);
@@ -231,9 +243,11 @@ export default class Ink {
       };
     }
     this.rootNode = dom.createNode('ink-root');
+    debugInk('rootNode complete');
     this.focusManager = new FocusManager((target, event) => dispatcher.dispatchDiscrete(target, event));
     this.rootNode.focusManager = this.focusManager;
     this.renderer = createRenderer(this.rootNode, this.stylePool);
+    debugInk('renderer complete');
     this.rootNode.onRender = this.scheduleRender;
     this.rootNode.onImmediateRender = this.onRender;
     this.rootNode.onComputeLayout = () => {
@@ -267,6 +281,7 @@ export default class Ink {
     // onRecoverableError
     noop // onDefaultTransitionIndicator
     );
+    debugInk('createContainer complete');
     if ("production" === 'development') {
       reconciler.injectIntoDevTools({
         bundleType: 0,
@@ -1447,9 +1462,9 @@ export default class Ink {
         </TerminalWriteProvider>
       </App>;
 
-    // @ts-expect-error updateContainerSync exists in react-reconciler but not in @types/react-reconciler
+    // @ts-expect-error updateContainerSync exists on the reconciler runtime
     reconciler.updateContainerSync(tree, this.container, null, noop);
-    // @ts-expect-error flushSyncWork exists in react-reconciler but not in @types/react-reconciler
+    // @ts-expect-error flushSyncWork exists on the reconciler runtime
     reconciler.flushSyncWork();
   }
   unmount(error?: Error | number | null): void {
@@ -1514,9 +1529,9 @@ export default class Ink {
       this.drainTimer = null;
     }
 
-    // @ts-expect-error updateContainerSync exists in react-reconciler but not in @types/react-reconciler
+    // @ts-expect-error updateContainerSync exists on the reconciler runtime
     reconciler.updateContainerSync(null, this.container, null, noop);
-    // @ts-expect-error flushSyncWork exists in react-reconciler but not in @types/react-reconciler
+    // @ts-expect-error flushSyncWork exists on the reconciler runtime
     reconciler.flushSyncWork();
     instances.delete(this.options.stdout);
 

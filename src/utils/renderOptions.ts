@@ -69,7 +69,10 @@ export function getBaseRenderOptions(
   exitOnCtrlC: boolean = false,
 ): RenderOptions {
   const stdin = getStdinOverride()
-  const options: RenderOptions = { exitOnCtrlC }
+  const options: RenderOptions = {
+    exitOnCtrlC,
+    patchConsole: false,
+  }
   if (stdin) {
     options.stdin = stdin
   }

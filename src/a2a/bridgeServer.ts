@@ -313,96 +313,104 @@ async function handleUserMessage(
   }
 }
 
-const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url ?? '/', `http://${req.headers.host ?? `${host}:${port}`}`)
+export function startBridgeServer(): http.Server {
+  const server = http.createServer(async (req, res) => {
+    const url = new URL(req.url ?? '/', `http://${req.headers.host ?? `${host}:${port}`}`)
 
-  if (req.method === 'POST' && url.pathname === '/sessions') {
-    let resumeSessionId: string | undefined
-    let body = ''
-    for await (const chunk of req) {
-      body += String(chunk)
-    }
-    if (body) {
-      try {
-        const parsed = JSON.parse(body) as { resume_session_id?: unknown }
-        if (typeof parsed.resume_session_id === 'string' && parsed.resume_session_id.trim()) {
-          resumeSessionId = parsed.resume_session_id.trim()
-        }
-      } catch {
-        res.writeHead(400, { 'content-type': 'application/json' })
-        res.end(JSON.stringify({ error: 'invalid json' }))
-        return
+    if (req.method === 'POST' && url.pathname === '/sessions') {
+      let resumeSessionId: string | undefined
+      let body = ''
+      for await (const chunk of req) {
+        body += String(chunk)
       }
-    }
-
-    const session = await getOrCreateSession(resumeSessionId)
-    const wsProtocol = host === '127.0.0.1' || host === 'localhost' ? 'ws' : 'ws'
-    res.writeHead(200, { 'content-type': 'application/json' })
-    res.end(
-      JSON.stringify({
-        session_id: session.id,
-        ws_url: `${wsProtocol}://${host}:${port}/ws/${session.id}`,
-        work_dir: process.cwd(),
-      }),
-    )
-    return
-  }
-
-  if (req.method === 'GET' && url.pathname === '/health') {
-    res.writeHead(200, { 'content-type': 'application/json' })
-    res.end(JSON.stringify({ ok: true }))
-    return
-  }
-
-  res.writeHead(404)
-  res.end('not found')
-})
-
-const wss = new WebSocketServer({ noServer: true })
-
-server.on('upgrade', async (req, socket, head) => {
-  const url = new URL(req.url ?? '/', `http://${req.headers.host ?? `${host}:${port}`}`)
-  const match = url.pathname.match(/^\/ws\/(.+)$/)
-  if (!match) {
-    socket.destroy()
-    return
-  }
-  const session = await getOrCreateSession(match[1])
-  wss.handleUpgrade(req, socket, head, (ws: WebSocket) => {
-    session.sockets.add(ws)
-    upsertSession(session)
-    sendJson(ws, initMessage())
-
-    ws.on('message', async (data: RawData) => {
-      let parsed: Record<string, unknown>
-      try {
-        parsed = JSON.parse(String(data)) as Record<string, unknown>
-      } catch {
-        sendJson(ws, buildResultError('invalid json'))
-        return
-      }
-
-      if (parsed.type === 'user') {
-        await handleUserMessage(session, parsed)
-        return
-      }
-
-      if (parsed.type === 'control_request') {
-        const request = parsed.request as { subtype?: string } | undefined
-        if (request?.subtype === 'interrupt') {
-          session.abortController?.abort()
-          broadcast(session, buildResultError('Interrupted'))
+      if (body) {
+        try {
+          const parsed = JSON.parse(body) as { resume_session_id?: unknown }
+          if (typeof parsed.resume_session_id === 'string' && parsed.resume_session_id.trim()) {
+            resumeSessionId = parsed.resume_session_id.trim()
+          }
+        } catch {
+          res.writeHead(400, { 'content-type': 'application/json' })
+          res.end(JSON.stringify({ error: 'invalid json' }))
+          return
         }
       }
-    })
 
-    ws.on('close', () => {
-      session.sockets.delete(ws)
+      const session = await getOrCreateSession(resumeSessionId)
+      const wsProtocol = host === '127.0.0.1' || host === 'localhost' ? 'ws' : 'ws'
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          session_id: session.id,
+          ws_url: `${wsProtocol}://${host}:${port}/ws/${session.id}`,
+          work_dir: process.cwd(),
+        }),
+      )
+      return
+    }
+
+    if (req.method === 'GET' && url.pathname === '/health') {
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ok: true }))
+      return
+    }
+
+    res.writeHead(404)
+    res.end('not found')
+  })
+
+  const wss = new WebSocketServer({ noServer: true })
+
+  server.on('upgrade', async (req, socket, head) => {
+    const url = new URL(req.url ?? '/', `http://${req.headers.host ?? `${host}:${port}`}`)
+    const match = url.pathname.match(/^\/ws\/(.+)$/)
+    if (!match) {
+      socket.destroy()
+      return
+    }
+    const session = await getOrCreateSession(match[1])
+    wss.handleUpgrade(req, socket, head, (ws: WebSocket) => {
+      session.sockets.add(ws)
+      upsertSession(session)
+      sendJson(ws, initMessage())
+
+      ws.on('message', async (data: RawData) => {
+        let parsed: Record<string, unknown>
+        try {
+          parsed = JSON.parse(String(data)) as Record<string, unknown>
+        } catch {
+          sendJson(ws, buildResultError('invalid json'))
+          return
+        }
+
+        if (parsed.type === 'user') {
+          await handleUserMessage(session, parsed)
+          return
+        }
+
+        if (parsed.type === 'control_request') {
+          const request = parsed.request as { subtype?: string } | undefined
+          if (request?.subtype === 'interrupt') {
+            session.abortController?.abort()
+            broadcast(session, buildResultError('Interrupted'))
+          }
+        }
+      })
+
+      ws.on('close', () => {
+        session.sockets.delete(ws)
+      })
     })
   })
-})
 
-server.listen(port, host, () => {
-  console.log(`Agent Runtime bridge listening on http://${host}:${port}`)
-  console.log(`Connect agent-runtime-cli with: agent-cli`)
-})
+  server.listen(port, host, () => {
+    console.log(`Agent Runtime bridge listening on http://${host}:${port}`)
+    console.log(`Connect agent-runtime-cli with: agent-cli`)
+  })
+
+  return server
+}
+
+if (import.meta.main) {
+  startBridgeServer()
+}

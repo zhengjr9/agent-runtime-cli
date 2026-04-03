@@ -27,6 +27,48 @@ bun install
 bun link
 ```
 
+如果你本机曾经配置过老的淘宝源 `https://registry.npm.taobao.org/`，`bun install` 可能报：
+
+```text
+CERT_HAS_EXPIRED
+```
+
+这个项目已经自带本地 registry 配置，优先使用：
+
+```text
+https://registry.npmmirror.com/
+```
+
+如果你仍然报错，先检查并清理用户级配置：
+
+```bash
+cat ~/.npmrc
+```
+
+如果看到：
+
+```text
+registry=https://registry.npm.taobao.org/
+```
+
+改成：
+
+```bash
+npm config set registry https://registry.npmmirror.com/
+```
+
+或者：
+
+```bash
+npm config set registry https://registry.npmjs.org/
+```
+
+如果你还设置了代理，也建议一起确认：
+
+```bash
+env | grep -i proxy
+```
+
 完成后可直接使用：
 
 ```bash
@@ -126,3 +168,37 @@ bun run bridge
 ```bash
 bun run start
 ```
+
+## 单文件二进制
+
+可以直接编译成不依赖目标机器本地 Bun/Node 环境的单文件可执行程序：
+
+```bash
+bun run build
+```
+
+产物默认输出到：
+
+```text
+dist/agent-cli
+```
+
+运行方式：
+
+```bash
+./dist/agent-cli
+```
+
+这个二进制内部已经支持：
+
+- `agent-cli`
+- `agent-cli bridge`
+- 自动拉起本地 bridge
+
+也就是说，目标机器不需要再保留源码目录来执行 `bun run ./src/...`。
+
+注意：
+
+- 这只是“不依赖本地 Bun/Node 环境”，不是离线运行
+- 目标机器仍然需要能访问你的 upstream A2A 服务
+- 如果 upstream 依赖本地代理，例如 `http://127.0.0.1:9092`，目标机器也仍然需要这个代理服务
