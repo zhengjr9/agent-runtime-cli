@@ -295,13 +295,13 @@ install_binary_archive() {
   local install_dir="${INSTALL_VERSIONS_DIR}/${version}"
   local extract_dir
   extract_dir="$(extract_archive "$archive_path")"
-  trap 'rm -rf "$extract_dir"' RETURN
 
   mkdir -p "$DOWNLOAD_DIR" "$install_dir" "$LINK_DIR"
   local source_bin=""
   source_bin="$(find_source_bin "$extract_dir" || true)"
 
   if [[ -z "$source_bin" ]]; then
+    rm -rf "$extract_dir"
     echo "Downloaded archive does not contain ${BIN_NAME}" >&2
     exit 1
   fi
@@ -311,16 +311,17 @@ install_binary_archive() {
   remove_quarantine "${install_dir}/${BIN_NAME}"
   resign_binary "${install_dir}/${BIN_NAME}"
   ln -sf "${install_dir}/${BIN_NAME}" "${LINK_DIR}/${BIN_NAME}"
+  rm -rf "$extract_dir"
 }
 
 install_offline_bundle_archive() {
   local archive_path="$1"
   local extract_dir bundle_root launcher_path
   extract_dir="$(extract_archive "$archive_path")"
-  trap 'rm -rf "$extract_dir"' RETURN
 
   bundle_root="$(find_offline_bundle_root "$extract_dir" || true)"
   if [[ -z "$bundle_root" ]]; then
+    rm -rf "$extract_dir"
     echo "Downloaded archive does not contain an offline bundle layout" >&2
     exit 1
   fi
@@ -368,6 +369,7 @@ EOF
     resign_binary "${INSTALL_OFFLINE_DIR}/bun/bin/bun"
   fi
   ln -sf "${launcher_path}" "${LINK_DIR}/${BIN_NAME}"
+  rm -rf "$extract_dir"
 }
 
 print_path_hint() {
