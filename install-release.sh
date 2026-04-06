@@ -384,7 +384,7 @@ print_path_hint() {
 }
 
 main() {
-  local os arch version asset_name download_url archive_path
+  local os arch version asset_name download_url archive_path asset_info_raw
 
   os="$(detect_os)"
   arch="$(detect_arch)"
@@ -397,19 +397,20 @@ main() {
 
   echo "Installing ${PROJECT_NAME} ${version} for ${os}-${arch}..."
 
-  local asset_info=()
-  if ! mapfile -t asset_info < <(pick_release_asset "$version" "$os" "$arch" 2>/dev/null); then
-    if ! mapfile -t asset_info < <(pick_repo_asset "$version" "$os" "$arch"); then
+  asset_info_raw="$(pick_release_asset "$version" "$os" "$arch" 2>/dev/null || true)"
+  if [[ -z "$asset_info_raw" ]]; then
+    asset_info_raw="$(pick_repo_asset "$version" "$os" "$arch" || true)"
+    if [[ -z "$asset_info_raw" ]]; then
       echo "No installable asset found for ${os}-${arch} version ${version}" >&2
       exit 1
     fi
   fi
-  if [[ "${#asset_info[@]}" -lt 2 ]]; then
+  asset_name="$(printf '%s\n' "$asset_info_raw" | sed -n '1p')"
+  download_url="$(printf '%s\n' "$asset_info_raw" | sed -n '2p')"
+  if [[ -z "$asset_name" || -z "$download_url" ]]; then
     echo "Installer could not resolve a download URL for ${os}-${arch} version ${version}" >&2
     exit 1
   fi
-  asset_name="${asset_info[0]}"
-  download_url="${asset_info[1]}"
 
   mkdir -p "$DOWNLOAD_DIR"
   archive_path="${DOWNLOAD_DIR}/${asset_name}"
