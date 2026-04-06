@@ -23,24 +23,31 @@
 推荐直接运行安装脚本：
 
 ```bash
-sh install.sh
+curl -fsSL https://raw.githubusercontent.com/zhengjr9/agent-runtime-cli/main/install-release.sh | bash
 ```
 
 脚本会：
 
-- 按当前系统和架构选择预编译二进制
-- 优先安装本地已存在的 `dist/agent-cli`
-- 否则从 GitHub Release 下载对应产物
-- 安装到 `~/.agent-runtime-cli/local/versions/<version>/agent-cli`
+- 按当前系统和架构选择 GitHub Release 产物
+- 优先下载并安装当前发布的离线运行包
+- 如果 release 里存在单文件二进制，也兼容安装
+- 离线运行包会安装到 `~/.agent-runtime-cli/offline/current`
+- 单文件二进制会安装到 `~/.agent-runtime-cli/local/versions/<version>/agent-cli`
 - 在 `~/.local/bin/agent-cli` 创建软链接
 
-如果你就是在本仓库里本地测试，并且已经有：
+如果你想安装指定版本，也可以：
 
-```text
-dist/agent-cli
+```bash
+curl -fsSL https://raw.githubusercontent.com/zhengjr9/agent-runtime-cli/main/install-release.sh | bash -s -- 0.2.0
 ```
 
-脚本会直接安装这个本地产物，不再执行 `bun run build`。
+如果你在源码仓库里本地测试，也可以继续使用：
+
+```bash
+sh install.sh
+```
+
+这个本地安装脚本会优先安装当前仓库已有的 `dist/agent-cli`，否则再从 GitHub Release 下载。
 
 安装完成后可直接使用：
 
