@@ -1,0 +1,6 @@
+{
+  "name": "@anthropic-ai/bedrock-sdk",
+  "version": "0.0.0-shim",
+  "type": "module",
+  "main": "index.js"
+}

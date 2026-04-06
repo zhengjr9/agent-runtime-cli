@@ -2223,6 +2223,7 @@ export function REPL({
     isMessageSelectorVisible: isMessageSelectorVisible || !!showBashesDialog,
     screen,
     abortSignal: abortController?.signal,
+    isLoading,
     popCommandFromQueue: handleQueuedCommandOnCancel,
     vimMode,
     isLocalJSXCommand: toolJSX?.isLocalJSXCommand,

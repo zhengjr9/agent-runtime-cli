@@ -10,7 +10,7 @@ import { createRoot } from './ink/root.js'
 import { getBaseRenderOptions } from './utils/renderOptions.js'
 import { getDefaultAppState } from './state/AppStateStore.js'
 import { getTools } from './tools.js'
-import { exitWithError, renderAndRun } from './interactiveHelpers.js'
+import { exitWithError, renderAndRun, showSetupDialog } from './interactiveHelpers.js'
 import { createSystemMessage } from './utils/messages.js'
 import {
   setCwdState,
@@ -178,18 +178,20 @@ async function ensureBridge(serverUrl: string): Promise<string> {
   }
 
   const actualServerUrl = await chooseBridgeUrl(serverUrl)
-  const projectRoot = fileURLToPath(new URL('../', import.meta.url))
   const isBunScript =
     process.execPath.includes('/.bun/') &&
     typeof process.argv[1] === 'string' &&
     /\.(tsx|ts|js|mjs|cjs)$/.test(process.argv[1])
+  const childCwd = isBunScript
+    ? fileURLToPath(new URL('../', import.meta.url))
+    : process.cwd()
   const command = isBunScript
     ? [process.execPath, 'run', process.argv[1], 'bridge']
     : [process.execPath, 'bridge']
   const child = spawn(command[0]!, command.slice(1), {
     detached: true,
     stdio: 'ignore',
-    cwd: projectRoot,
+    cwd: childCwd,
     env: {
       ...process.env,
       CLAUDE_A2A_BRIDGE_PORT: new URL(actualServerUrl).port,
@@ -214,16 +216,17 @@ async function ensureInitialUpstream(root: Awaited<ReturnType<typeof createRoot>
   }
 
   await new Promise<void>((resolve, reject) => {
-    root.render(
+    void showSetupDialog<void>(root, done => (
       <InitialUpstreamSetup
         onComplete={() => {
           resolve()
+          void done()
         }}
         onCancel={() => {
           reject(new A2ADirectConnectError('Upstream setup was cancelled'))
         }}
-      />,
-    )
+      />
+    )).catch(reject)
   })
 }
 

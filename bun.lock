@@ -10,22 +10,38 @@
         "@ant/computer-use-input": "file:./shims/ant-computer-use-input",
         "@ant/computer-use-mcp": "file:./shims/ant-computer-use-mcp",
         "@ant/computer-use-swift": "file:./shims/ant-computer-use-swift",
+        "@anthropic-ai/bedrock-sdk": "file:./shims/anthropic-bedrock-sdk",
         "@anthropic-ai/claude-agent-sdk": "*",
+        "@anthropic-ai/foundry-sdk": "file:./shims/anthropic-foundry-sdk",
         "@anthropic-ai/mcpb": "*",
         "@anthropic-ai/sandbox-runtime": "*",
         "@anthropic-ai/sdk": "*",
+        "@anthropic-ai/vertex-sdk": "file:./shims/anthropic-vertex-sdk",
+        "@aws-sdk/client-bedrock": "file:./shims/aws-sdk-client-bedrock",
         "@aws-sdk/client-bedrock-runtime": "*",
+        "@aws-sdk/client-sts": "file:./shims/aws-sdk-client-sts",
+        "@azure/identity": "file:./shims/azure-identity",
         "@commander-js/extra-typings": "*",
         "@growthbook/growthbook": "*",
         "@modelcontextprotocol/sdk": "*",
-        "@opentelemetry/api": "*",
-        "@opentelemetry/api-logs": "*",
-        "@opentelemetry/core": "*",
-        "@opentelemetry/resources": "*",
-        "@opentelemetry/sdk-logs": "*",
-        "@opentelemetry/sdk-metrics": "*",
-        "@opentelemetry/sdk-trace-base": "*",
-        "@opentelemetry/semantic-conventions": "*",
+        "@opentelemetry/api": "file:./shims/opentelemetry-api",
+        "@opentelemetry/api-logs": "file:./shims/opentelemetry-api-logs",
+        "@opentelemetry/core": "file:./shims/opentelemetry-core",
+        "@opentelemetry/exporter-logs-otlp-grpc": "file:./shims/opentelemetry-exporter-logs-otlp-grpc",
+        "@opentelemetry/exporter-logs-otlp-http": "file:./shims/opentelemetry-exporter-logs-otlp-http",
+        "@opentelemetry/exporter-logs-otlp-proto": "file:./shims/opentelemetry-exporter-logs-otlp-proto",
+        "@opentelemetry/exporter-metrics-otlp-grpc": "file:./shims/opentelemetry-exporter-metrics-otlp-grpc",
+        "@opentelemetry/exporter-metrics-otlp-http": "file:./shims/opentelemetry-exporter-metrics-otlp-http",
+        "@opentelemetry/exporter-metrics-otlp-proto": "file:./shims/opentelemetry-exporter-metrics-otlp-proto",
+        "@opentelemetry/exporter-prometheus": "file:./shims/opentelemetry-exporter-prometheus",
+        "@opentelemetry/exporter-trace-otlp-grpc": "file:./shims/opentelemetry-exporter-trace-otlp-grpc",
+        "@opentelemetry/exporter-trace-otlp-http": "file:./shims/opentelemetry-exporter-trace-otlp-http",
+        "@opentelemetry/exporter-trace-otlp-proto": "file:./shims/opentelemetry-exporter-trace-otlp-proto",
+        "@opentelemetry/resources": "file:./shims/opentelemetry-resources",
+        "@opentelemetry/sdk-logs": "file:./shims/opentelemetry-sdk-logs",
+        "@opentelemetry/sdk-metrics": "file:./shims/opentelemetry-sdk-metrics",
+        "@opentelemetry/sdk-trace-base": "file:./shims/opentelemetry-sdk-trace-base",
+        "@opentelemetry/semantic-conventions": "file:./shims/opentelemetry-semantic-conventions",
         "ajv": "*",
         "asciichart": "*",
         "auto-bind": "*",
@@ -61,12 +77,14 @@
         "react": "19.2.4",
         "react-reconciler": "0.33.0",
         "semver": "*",
+        "sharp": "file:./shims/sharp",
         "shell-quote": "*",
         "signal-exit": "*",
         "stack-utils": "*",
         "strip-ansi": "*",
         "supports-hyperlinks": "*",
         "tree-kill": "*",
+        "turndown": "file:./shims/turndown",
         "type-fest": "*",
         "undici": "*",
         "url-handler-napi": "file:./shims/url-handler-napi",
@@ -93,13 +111,19 @@
 
     "@ant/computer-use-swift": ["@ant/computer-use-swift@file:shims/ant-computer-use-swift", {}],
 
+    "@anthropic-ai/bedrock-sdk": ["@anthropic-ai/bedrock-sdk@file:shims/anthropic-bedrock-sdk", {}],
+
     "@anthropic-ai/claude-agent-sdk": ["@anthropic-ai/claude-agent-sdk@0.2.91", "https://registry.npmmirror.com/@anthropic-ai/claude-agent-sdk/-/claude-agent-sdk-0.2.91.tgz", { "dependencies": { "@anthropic-ai/sdk": "^0.80.0", "@modelcontextprotocol/sdk": "^1.27.1" }, "optionalDependencies": { "@img/sharp-darwin-arm64": "^0.34.2", "@img/sharp-darwin-x64": "^0.34.2", "@img/sharp-linux-arm": "^0.34.2", "@img/sharp-linux-arm64": "^0.34.2", "@img/sharp-linux-x64": "^0.34.2", "@img/sharp-linuxmusl-arm64": "^0.34.2", "@img/sharp-linuxmusl-x64": "^0.34.2", "@img/sharp-win32-arm64": "^0.34.2", "@img/sharp-win32-x64": "^0.34.2" }, "peerDependencies": { "zod": "^4.0.0" } }, "sha512-DCd5Ad5XKBbIIOMZ73L+c+e9azM6NtZzOtdKQAzykzRG/KxSCMraMAsMMQrJrIUMH3oTtHY7QuQimAiElVVVpA=="],
+
+    "@anthropic-ai/foundry-sdk": ["@anthropic-ai/foundry-sdk@file:shims/anthropic-foundry-sdk", {}],
 
     "@anthropic-ai/mcpb": ["@anthropic-ai/mcpb@2.1.2", "https://registry.npmmirror.com/@anthropic-ai/mcpb/-/mcpb-2.1.2.tgz", { "dependencies": { "@inquirer/prompts": "^6.0.1", "commander": "^13.1.0", "fflate": "^0.8.2", "galactus": "^1.0.0", "ignore": "^7.0.5", "node-forge": "^1.3.2", "pretty-bytes": "^5.6.0", "zod": "^3.25.67", "zod-to-json-schema": "^3.24.6" }, "bin": { "mcpb": "dist/cli/cli.js" } }, "sha512-goRbBC8ySo7SWb7tRzr+tL6FxDc4JPTRCdgfD2omba7freofvjq5rom1lBnYHZHo6Mizs1jAHJeN53aZbDoy8A=="],
 
     "@anthropic-ai/sandbox-runtime": ["@anthropic-ai/sandbox-runtime@0.0.49", "https://registry.npmmirror.com/@anthropic-ai/sandbox-runtime/-/sandbox-runtime-0.0.49.tgz", { "dependencies": { "@pondwader/socks5-server": "^1.0.10", "commander": "^12.1.0", "shell-quote": "^1.8.3", "zod": "^3.24.1" }, "bin": { "srt": "dist/cli.js" } }, "sha512-t8Ggc0A7UizxMGPk/ANEH8nwnCqzNWIKpkdKgxDVUaKNMQnMzzWR6aErrqIdU03/ZP5RN6/OL/kjFOw/Vox3KQ=="],
 
     "@anthropic-ai/sdk": ["@anthropic-ai/sdk@0.82.0", "https://registry.npmmirror.com/@anthropic-ai/sdk/-/sdk-0.82.0.tgz", { "dependencies": { "json-schema-to-ts": "^3.1.1" }, "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" }, "optionalPeers": ["zod"], "bin": { "anthropic-ai-sdk": "bin/cli" } }, "sha512-xdHTjL1GlUlDugHq/I47qdOKp/ROPvuHl7ROJCgUQigbvPu7asf9KcAcU1EqdrP2LuVhEKaTs7Z+ShpZDRzHdQ=="],
+
+    "@anthropic-ai/vertex-sdk": ["@anthropic-ai/vertex-sdk@file:shims/anthropic-vertex-sdk", {}],
 
     "@aws-crypto/crc32": ["@aws-crypto/crc32@5.2.0", "https://registry.npmmirror.com/@aws-crypto/crc32/-/crc32-5.2.0.tgz", { "dependencies": { "@aws-crypto/util": "^5.2.0", "@aws-sdk/types": "^3.222.0", "tslib": "^2.6.2" } }, "sha512-nLbCWqQNgUiwwtFsen1AdzAtvuLRsQS8rYgMuxCrdKf9kOssamGLuPwyTY9wyYblNr9+1XM8v6zoDTPPSIeANg=="],
 
@@ -111,7 +135,11 @@
 
     "@aws-crypto/util": ["@aws-crypto/util@5.2.0", "https://registry.npmmirror.com/@aws-crypto/util/-/util-5.2.0.tgz", { "dependencies": { "@aws-sdk/types": "^3.222.0", "@smithy/util-utf8": "^2.0.0", "tslib": "^2.6.2" } }, "sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ=="],
 
+    "@aws-sdk/client-bedrock": ["@aws-sdk/client-bedrock@file:shims/aws-sdk-client-bedrock", {}],
+
     "@aws-sdk/client-bedrock-runtime": ["@aws-sdk/client-bedrock-runtime@3.1023.0", "https://registry.npmmirror.com/@aws-sdk/client-bedrock-runtime/-/client-bedrock-runtime-3.1023.0.tgz", { "dependencies": { "@aws-crypto/sha256-browser": "5.2.0", "@aws-crypto/sha256-js": "5.2.0", "@aws-sdk/core": "^3.973.26", "@aws-sdk/credential-provider-node": "^3.972.29", "@aws-sdk/eventstream-handler-node": "^3.972.12", "@aws-sdk/middleware-eventstream": "^3.972.8", "@aws-sdk/middleware-host-header": "^3.972.8", "@aws-sdk/middleware-logger": "^3.972.8", "@aws-sdk/middleware-recursion-detection": "^3.972.9", "@aws-sdk/middleware-user-agent": "^3.972.28", "@aws-sdk/middleware-websocket": "^3.972.14", "@aws-sdk/region-config-resolver": "^3.972.10", "@aws-sdk/token-providers": "3.1023.0", "@aws-sdk/types": "^3.973.6", "@aws-sdk/util-endpoints": "^3.996.5", "@aws-sdk/util-user-agent-browser": "^3.972.8", "@aws-sdk/util-user-agent-node": "^3.973.14", "@smithy/config-resolver": "^4.4.13", "@smithy/core": "^3.23.13", "@smithy/eventstream-serde-browser": "^4.2.12", "@smithy/eventstream-serde-config-resolver": "^4.3.12", "@smithy/eventstream-serde-node": "^4.2.12", "@smithy/fetch-http-handler": "^5.3.15", "@smithy/hash-node": "^4.2.12", "@smithy/invalid-dependency": "^4.2.12", "@smithy/middleware-content-length": "^4.2.12", "@smithy/middleware-endpoint": "^4.4.28", "@smithy/middleware-retry": "^4.4.46", "@smithy/middleware-serde": "^4.2.16", "@smithy/middleware-stack": "^4.2.12", "@smithy/node-config-provider": "^4.3.12", "@smithy/node-http-handler": "^4.5.1", "@smithy/protocol-http": "^5.3.12", "@smithy/smithy-client": "^4.12.8", "@smithy/types": "^4.13.1", "@smithy/url-parser": "^4.2.12", "@smithy/util-base64": "^4.3.2", "@smithy/util-body-length-browser": "^4.2.2", "@smithy/util-body-length-node": "^4.2.3", "@smithy/util-defaults-mode-browser": "^4.3.44", "@smithy/util-defaults-mode-node": "^4.2.48", "@smithy/util-endpoints": "^3.3.3", "@smithy/util-middleware": "^4.2.12", "@smithy/util-retry": "^4.2.13", "@smithy/util-stream": "^4.5.21", "@smithy/util-utf8": "^4.2.2", "tslib": "^2.6.2" } }, "sha512-C0He9qhrClUp6JEk3QjE0WScDN1GSZF8eruP0uoh5kXeQEJLxyfFDrR2TIYnHntlRs/sMwhO82Vu7yGGQM2pfQ=="],
+
+    "@aws-sdk/client-sts": ["@aws-sdk/client-sts@file:shims/aws-sdk-client-sts", {}],
 
     "@aws-sdk/core": ["@aws-sdk/core@3.973.26", "https://registry.npmmirror.com/@aws-sdk/core/-/core-3.973.26.tgz", { "dependencies": { "@aws-sdk/types": "^3.973.6", "@aws-sdk/xml-builder": "^3.972.16", "@smithy/core": "^3.23.13", "@smithy/node-config-provider": "^4.3.12", "@smithy/property-provider": "^4.2.12", "@smithy/protocol-http": "^5.3.12", "@smithy/signature-v4": "^5.3.12", "@smithy/smithy-client": "^4.12.8", "@smithy/types": "^4.13.1", "@smithy/util-base64": "^4.3.2", "@smithy/util-middleware": "^4.2.12", "@smithy/util-utf8": "^4.2.2", "tslib": "^2.6.2" } }, "sha512-A/E6n2W42ruU+sfWk+mMUOyVXbsSgGrY3MJ9/0Az5qUdG67y8I6HYzzoAa+e/lzxxl1uCYmEL6BTMi9ZiZnplQ=="],
 
@@ -166,6 +194,8 @@
     "@aws-sdk/xml-builder": ["@aws-sdk/xml-builder@3.972.16", "https://registry.npmmirror.com/@aws-sdk/xml-builder/-/xml-builder-3.972.16.tgz", { "dependencies": { "@smithy/types": "^4.13.1", "fast-xml-parser": "5.5.8", "tslib": "^2.6.2" } }, "sha512-iu2pyvaqmeatIJLURLqx9D+4jKAdTH20ntzB6BFwjyN7V960r4jK32mx0Zf7YbtOYAbmbtQfDNuL60ONinyw7A=="],
 
     "@aws/lambda-invoke-store": ["@aws/lambda-invoke-store@0.2.4", "https://registry.npmmirror.com/@aws/lambda-invoke-store/-/lambda-invoke-store-0.2.4.tgz", {}, "sha512-iY8yvjE0y651BixKNPgmv1WrQc+GZ142sb0z4gYnChDDY2YqI4P/jsSopBWrKfAt7LOJAkOXt7rC/hms+WclQQ=="],
+
+    "@azure/identity": ["@azure/identity@file:shims/azure-identity", {}],
 
     "@babel/runtime": ["@babel/runtime@7.29.2", "https://registry.npmmirror.com/@babel/runtime/-/runtime-7.29.2.tgz", {}, "sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g=="],
 
@@ -237,21 +267,41 @@
 
     "@modelcontextprotocol/sdk": ["@modelcontextprotocol/sdk@1.29.0", "https://registry.npmmirror.com/@modelcontextprotocol/sdk/-/sdk-1.29.0.tgz", { "dependencies": { "@hono/node-server": "^1.19.9", "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "content-type": "^1.0.5", "cors": "^2.8.5", "cross-spawn": "^7.0.5", "eventsource": "^3.0.2", "eventsource-parser": "^3.0.0", "express": "^5.2.1", "express-rate-limit": "^8.2.1", "hono": "^4.11.4", "jose": "^6.1.3", "json-schema-typed": "^8.0.2", "pkce-challenge": "^5.0.0", "raw-body": "^3.0.0", "zod": "^3.25 || ^4.0", "zod-to-json-schema": "^3.25.1" }, "peerDependencies": { "@cfworker/json-schema": "^4.1.1" }, "optionalPeers": ["@cfworker/json-schema"] }, "sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ=="],
 
-    "@opentelemetry/api": ["@opentelemetry/api@1.9.1", "https://registry.npmmirror.com/@opentelemetry/api/-/api-1.9.1.tgz", {}, "sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q=="],
+    "@opentelemetry/api": ["@opentelemetry/api@file:shims/opentelemetry-api", {}],
 
-    "@opentelemetry/api-logs": ["@opentelemetry/api-logs@0.214.0", "https://registry.npmmirror.com/@opentelemetry/api-logs/-/api-logs-0.214.0.tgz", { "dependencies": { "@opentelemetry/api": "^1.3.0" } }, "sha512-40lSJeqYO8Uz2Yj7u94/SJWE/wONa7rmMKjI1ZcIjgf3MHNHv1OZUCrCETGuaRF62d5pQD1wKIW+L4lmSMTzZA=="],
+    "@opentelemetry/api-logs": ["@opentelemetry/api-logs@file:shims/opentelemetry-api-logs", {}],
 
-    "@opentelemetry/core": ["@opentelemetry/core@2.6.1", "https://registry.npmmirror.com/@opentelemetry/core/-/core-2.6.1.tgz", { "dependencies": { "@opentelemetry/semantic-conventions": "^1.29.0" }, "peerDependencies": { "@opentelemetry/api": ">=1.0.0 <1.10.0" } }, "sha512-8xHSGWpJP9wBxgBpnqGL0R3PbdWQndL1Qp50qrg71+B28zK5OQmUgcDKLJgzyAAV38t4tOyLMGDD60LneR5W8g=="],
+    "@opentelemetry/core": ["@opentelemetry/core@file:shims/opentelemetry-core", {}],
 
-    "@opentelemetry/resources": ["@opentelemetry/resources@2.6.1", "https://registry.npmmirror.com/@opentelemetry/resources/-/resources-2.6.1.tgz", { "dependencies": { "@opentelemetry/core": "2.6.1", "@opentelemetry/semantic-conventions": "^1.29.0" }, "peerDependencies": { "@opentelemetry/api": ">=1.3.0 <1.10.0" } }, "sha512-lID/vxSuKWXM55XhAKNoYXu9Cutoq5hFdkbTdI/zDKQktXzcWBVhNsOkiZFTMU9UtEWuGRNe0HUgmsFldIdxVA=="],
+    "@opentelemetry/exporter-logs-otlp-grpc": ["@opentelemetry/exporter-logs-otlp-grpc@file:shims/opentelemetry-exporter-logs-otlp-grpc", {}],
 
-    "@opentelemetry/sdk-logs": ["@opentelemetry/sdk-logs@0.214.0", "https://registry.npmmirror.com/@opentelemetry/sdk-logs/-/sdk-logs-0.214.0.tgz", { "dependencies": { "@opentelemetry/api-logs": "0.214.0", "@opentelemetry/core": "2.6.1", "@opentelemetry/resources": "2.6.1", "@opentelemetry/semantic-conventions": "^1.29.0" }, "peerDependencies": { "@opentelemetry/api": ">=1.4.0 <1.10.0" } }, "sha512-zf6acnScjhsaBUU22zXZ/sLWim1dfhUAbGXdMmHmNG3LfBnQ3DKsOCITb2IZwoUsNNMTogqFKBnlIPPftUgGwA=="],
+    "@opentelemetry/exporter-logs-otlp-http": ["@opentelemetry/exporter-logs-otlp-http@file:shims/opentelemetry-exporter-logs-otlp-http", {}],
 
-    "@opentelemetry/sdk-metrics": ["@opentelemetry/sdk-metrics@2.6.1", "https://registry.npmmirror.com/@opentelemetry/sdk-metrics/-/sdk-metrics-2.6.1.tgz", { "dependencies": { "@opentelemetry/core": "2.6.1", "@opentelemetry/resources": "2.6.1" }, "peerDependencies": { "@opentelemetry/api": ">=1.9.0 <1.10.0" } }, "sha512-9t9hJHX15meBy2NmTJxL+NJfXmnausR2xUDvE19XQce0Qi/GBtDGamU8nS1RMbdgDmhgpm3VaOu2+fiS/SfTpQ=="],
+    "@opentelemetry/exporter-logs-otlp-proto": ["@opentelemetry/exporter-logs-otlp-proto@file:shims/opentelemetry-exporter-logs-otlp-proto", {}],
 
-    "@opentelemetry/sdk-trace-base": ["@opentelemetry/sdk-trace-base@2.6.1", "https://registry.npmmirror.com/@opentelemetry/sdk-trace-base/-/sdk-trace-base-2.6.1.tgz", { "dependencies": { "@opentelemetry/core": "2.6.1", "@opentelemetry/resources": "2.6.1", "@opentelemetry/semantic-conventions": "^1.29.0" }, "peerDependencies": { "@opentelemetry/api": ">=1.3.0 <1.10.0" } }, "sha512-r86ut4T1e8vNwB35CqCcKd45yzqH6/6Wzvpk2/cZB8PsPLlZFTvrh8yfOS3CYZYcUmAx4hHTZJ8AO8Dj8nrdhw=="],
+    "@opentelemetry/exporter-metrics-otlp-grpc": ["@opentelemetry/exporter-metrics-otlp-grpc@file:shims/opentelemetry-exporter-metrics-otlp-grpc", {}],
 
-    "@opentelemetry/semantic-conventions": ["@opentelemetry/semantic-conventions@1.40.0", "https://registry.npmmirror.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.40.0.tgz", {}, "sha512-cifvXDhcqMwwTlTK04GBNeIe7yyo28Mfby85QXFe1Yk8nmi36Ab/5UQwptOx84SsoGNRg+EVSjwzfSZMy6pmlw=="],
+    "@opentelemetry/exporter-metrics-otlp-http": ["@opentelemetry/exporter-metrics-otlp-http@file:shims/opentelemetry-exporter-metrics-otlp-http", {}],
+
+    "@opentelemetry/exporter-metrics-otlp-proto": ["@opentelemetry/exporter-metrics-otlp-proto@file:shims/opentelemetry-exporter-metrics-otlp-proto", {}],
+
+    "@opentelemetry/exporter-prometheus": ["@opentelemetry/exporter-prometheus@file:shims/opentelemetry-exporter-prometheus", {}],
+
+    "@opentelemetry/exporter-trace-otlp-grpc": ["@opentelemetry/exporter-trace-otlp-grpc@file:shims/opentelemetry-exporter-trace-otlp-grpc", {}],
+
+    "@opentelemetry/exporter-trace-otlp-http": ["@opentelemetry/exporter-trace-otlp-http@file:shims/opentelemetry-exporter-trace-otlp-http", {}],
+
+    "@opentelemetry/exporter-trace-otlp-proto": ["@opentelemetry/exporter-trace-otlp-proto@file:shims/opentelemetry-exporter-trace-otlp-proto", {}],
+
+    "@opentelemetry/resources": ["@opentelemetry/resources@file:shims/opentelemetry-resources", {}],
+
+    "@opentelemetry/sdk-logs": ["@opentelemetry/sdk-logs@file:shims/opentelemetry-sdk-logs", {}],
+
+    "@opentelemetry/sdk-metrics": ["@opentelemetry/sdk-metrics@file:shims/opentelemetry-sdk-metrics", {}],
+
+    "@opentelemetry/sdk-trace-base": ["@opentelemetry/sdk-trace-base@file:shims/opentelemetry-sdk-trace-base", {}],
+
+    "@opentelemetry/semantic-conventions": ["@opentelemetry/semantic-conventions@file:shims/opentelemetry-semantic-conventions", {}],
 
     "@pondwader/socks5-server": ["@pondwader/socks5-server@1.0.10", "https://registry.npmmirror.com/@pondwader/socks5-server/-/socks5-server-1.0.10.tgz", {}, "sha512-bQY06wzzR8D2+vVCUoBsr5QS2U6UgPUQRmErNwtsuI6vLcyRKkafjkr3KxbtGFf9aBBIV2mcvlsKD1UYaIV+sg=="],
 
@@ -755,6 +805,8 @@
 
     "setprototypeof": ["setprototypeof@1.2.0", "https://registry.npmmirror.com/setprototypeof/-/setprototypeof-1.2.0.tgz", {}, "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw=="],
 
+    "sharp": ["sharp@file:shims/sharp", {}],
+
     "shebang-command": ["shebang-command@2.0.0", "https://registry.npmmirror.com/shebang-command/-/shebang-command-2.0.0.tgz", { "dependencies": { "shebang-regex": "^3.0.0" } }, "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA=="],
 
     "shebang-regex": ["shebang-regex@3.0.0", "https://registry.npmmirror.com/shebang-regex/-/shebang-regex-3.0.0.tgz", {}, "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A=="],
@@ -802,6 +854,8 @@
     "ts-algebra": ["ts-algebra@2.0.0", "https://registry.npmmirror.com/ts-algebra/-/ts-algebra-2.0.0.tgz", {}, "sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw=="],
 
     "tslib": ["tslib@2.8.1", "https://registry.npmmirror.com/tslib/-/tslib-2.8.1.tgz", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
+
+    "turndown": ["turndown@file:shims/turndown", {}],
 
     "type-fest": ["type-fest@4.41.0", "https://registry.npmmirror.com/type-fest/-/type-fest-4.41.0.tgz", {}, "sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA=="],
 

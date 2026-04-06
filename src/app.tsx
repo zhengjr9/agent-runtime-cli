@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Box, Newline, Text, useApp, useInput, useStdout } from 'ink'
+import { Box, Newline, Text, useApp, useInput } from './ink.js'
 
 import { streamMessage } from './a2aClient.js'
 import {
@@ -51,7 +51,6 @@ function useSpinner(active: boolean): string {
 
 export function App({ config, initialBundle }: Props): React.JSX.Element {
   const { exit } = useApp()
-  const { stdout } = useStdout()
   const [bundle, setBundle] = useState(initialBundle)
   const [sessions, setSessions] = useState<SessionRecord[]>([])
   const [status, setStatus] = useState('idle')
@@ -188,6 +187,35 @@ export function App({ config, initialBundle }: Props): React.JSX.Element {
             setStatus(event.text)
             return
           }
+          if (event.type === 'tool') {
+            const prefix =
+              event.toolEventType === 'tool_call_started'
+                ? 'Tool started'
+                : event.toolEventType === 'tool_call_finished'
+                  ? 'Tool finished'
+                  : 'Tool failed'
+            const suffix =
+              event.toolEventType === 'tool_call_failed'
+                ? event.toolError
+                : event.toolEventType === 'tool_call_finished'
+                  ? typeof event.toolResult === 'string'
+                    ? event.toolResult
+                    : ''
+                  : typeof event.toolDescribe === 'string'
+                    ? event.toolDescribe
+                    : ''
+            setBundle((current) => ({
+              ...current,
+              messages: [
+                ...current.messages,
+                newMessage(
+                  'system',
+                  `${prefix}: ${event.toolName}${suffix ? `\n${suffix}` : ''}`,
+                ),
+              ],
+            }))
+            return
+          }
           if (event.type === 'task') {
             setBundle((current) => ({
               ...current,
@@ -287,7 +315,7 @@ export function App({ config, initialBundle }: Props): React.JSX.Element {
     }
   })
 
-  const terminalWidth = stdout.columns || 120
+  const terminalWidth = process.stdout.columns || 120
   const sidebarWidth = Math.min(42, Math.max(28, Math.floor(terminalWidth * 0.28)))
   const mainWidth = Math.max(40, terminalWidth - sidebarWidth - 4)
   const recentMessages = transcript.slice(-18)

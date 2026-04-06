@@ -1,6 +1,6 @@
 # agent-runtime-cli
 
-`agent-runtime-cli` 是一个参考 Claude 风格 REPL 体验实现的终端对话工具，前端技术栈保持为 `TypeScript + React + Ink`，后端通过本地 bridge 对接 `agent-runtime` 的 A2A `message/stream` 接口。
+`agent-runtime-cli` 是一个 REPL 体验实现的终端对话工具，前端技术栈保持为 `TypeScript + React + Ink`，后端通过本地 bridge 对接 `agent-runtime` 的 A2A `message/stream` 接口。
 
 当前能力：
 
@@ -20,65 +20,38 @@
 
 ## 安装
 
-在项目目录执行：
+推荐直接运行安装脚本：
 
 ```bash
-bun install
-bun link
+sh install.sh
 ```
 
-如果你本机曾经配置过老的淘宝源 `https://registry.npm.taobao.org/`，`bun install` 可能报：
+脚本会：
+
+- 按当前系统和架构选择预编译二进制
+- 优先安装本地已存在的 `dist/agent-cli`
+- 否则从 GitHub Release 下载对应产物
+- 安装到 `~/.agent-runtime-cli/local/versions/<version>/agent-cli`
+- 在 `~/.local/bin/agent-cli` 创建软链接
+
+如果你就是在本仓库里本地测试，并且已经有：
 
 ```text
-CERT_HAS_EXPIRED
+dist/agent-cli
 ```
 
-这个项目已经自带本地 registry 配置，优先使用：
+脚本会直接安装这个本地产物，不再执行 `bun run build`。
 
-```text
-https://registry.npmmirror.com/
-```
-
-如果你仍然报错，先检查并清理用户级配置：
-
-```bash
-cat ~/.npmrc
-```
-
-如果看到：
-
-```text
-registry=https://registry.npm.taobao.org/
-```
-
-改成：
-
-```bash
-npm config set registry https://registry.npmmirror.com/
-```
-
-或者：
-
-```bash
-npm config set registry https://registry.npmjs.org/
-```
-
-如果你还设置了代理，也建议一起确认：
-
-```bash
-env | grep -i proxy
-```
-
-完成后可直接使用：
+安装完成后可直接使用：
 
 ```bash
 agent-cli
 ```
 
-如果你的 shell 还没有包含 Bun bin 目录，请先加入：
+如果你的 shell 还没有包含 `~/.local/bin`，请先加入：
 
 ```bash
-export PATH="$HOME/.bun/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
 ## 使用
@@ -171,34 +144,113 @@ bun run start
 
 ## 单文件二进制
 
-可以直接编译成不依赖目标机器本地 Bun/Node 环境的单文件可执行程序：
+安装脚本使用的就是预编译单文件二进制方案，不依赖目标机器本地 Bun/Node 运行时。
 
-```bash
-bun run build
-```
-
-产物默认输出到：
-
-```text
-dist/agent-cli
-```
-
-运行方式：
+如果你在源码仓库里本地测试，也可以直接运行已有产物：
 
 ```bash
 ./dist/agent-cli
 ```
-
-这个二进制内部已经支持：
-
-- `agent-cli`
-- `agent-cli bridge`
-- 自动拉起本地 bridge
-
-也就是说，目标机器不需要再保留源码目录来执行 `bun run ./src/...`。
 
 注意：
 
 - 这只是“不依赖本地 Bun/Node 环境”，不是离线运行
 - 目标机器仍然需要能访问你的 upstream A2A 服务
 - 如果 upstream 依赖本地代理，例如 `http://127.0.0.1:9092`，目标机器也仍然需要这个代理服务
+
+## 离线安装包
+
+如果你要分发“当前这份带 UI 的代码”，不要用旧的 `dist/agent-cli`。应当使用离线源码运行包。
+
+先在有完整依赖的机器上打包：
+
+```bash
+sh scripts/package-offline.sh
+```
+
+也可以一次生成多个目标包：
+
+```bash
+sh scripts/package-offline.sh linux-amd64 windows-x86
+```
+
+如果你要一次把常用平台全部打出来：
+
+```bash
+sh scripts/package-offline.sh --all
+```
+
+或者：
+
+```bash
+sh scripts/package-offline-all.sh
+```
+
+默认会生成当前平台对应的：
+
+```text
+dist-offline/agent-runtime-cli-offline-<version>-<os>-<arch>.tar.gz
+```
+
+这个离线包包含：
+
+- 当前 `src`
+- 当前 `node_modules`
+- `shims`
+- `package.json`
+- `bun.lock`
+- `bunfig.toml`
+- `.npmrc`
+- `install-offline.sh`
+- 可选的 `bun` 二进制
+
+对于当前平台，默认会把本机 `~/.bun/bin/bun` 一起打进包里，所以目标机器不需要额外安装 Bun。
+
+对于跨平台目标：
+
+- 如果没有提供该目标平台的 bun，可照常生成源码离线包
+- 安装后会优先尝试本地 `bun`
+- 如果没有 `bun`，会继续尝试本地 `node --import tsx`
+
+当前已支持的目标写法包括：
+
+- `darwin-arm64`
+- `darwin-amd64`
+- `linux-amd64`
+- `linux-arm64`
+- `windows-amd64`
+- `windows-x86`
+
+在类 Unix 目标机器上安装：
+
+```bash
+tar -xzf agent-runtime-cli-offline-<version>-<os>-<arch>.tar.gz
+cd agent-runtime-cli-offline-<version>-<os>-<arch>
+sh install.sh
+```
+
+在 Windows 目标机器上安装：
+
+```powershell
+tar -xzf agent-runtime-cli-offline-<version>-windows-x86.tar.gz
+cd agent-runtime-cli-offline-<version>-windows-x86
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+安装完成后直接运行：
+
+```bash
+agent-cli
+```
+
+离线安装会把当前 UI 版项目放到：
+
+```text
+~/.agent-runtime-cli/offline/current
+```
+
+并在下面创建命令入口：
+
+```text
+~/.local/bin/agent-cli
+```

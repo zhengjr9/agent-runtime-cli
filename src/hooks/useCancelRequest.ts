@@ -46,6 +46,7 @@ type CancelRequestHandlerProps = {
   isMessageSelectorVisible: boolean
   screen: Screen
   abortSignal?: AbortSignal
+  isLoading?: boolean
   popCommandFromQueue?: () => void
   vimMode?: VimMode
   isLocalJSXCommand?: boolean
@@ -68,6 +69,7 @@ export function CancelRequestHandler(props: CancelRequestHandlerProps): null {
     isMessageSelectorVisible,
     screen,
     abortSignal,
+    isLoading = false,
     popCommandFromQueue,
     vimMode,
     isLocalJSXCommand,
@@ -94,7 +96,7 @@ export function CancelRequestHandler(props: CancelRequestHandlerProps): null {
 
     // Priority 1: If there's an active task running, cancel it first
     // This takes precedence over queue management so users can always interrupt Claude
-    if (abortSignal !== undefined && !abortSignal.aborted) {
+    if ((abortSignal !== undefined && !abortSignal.aborted) || isLoading) {
       logEvent('tengu_cancel', cancelProps)
       setToolUseConfirmQueue(() => [])
       onCancel()
@@ -126,7 +128,8 @@ export function CancelRequestHandler(props: CancelRequestHandlerProps): null {
   // Overlays (ModelPicker, ThinkingToggle, etc.) register themselves via useRegisterOverlay
   // Local JSX commands (like /model, /btw) handle their own input
   const isOverlayActive = useIsOverlayActive()
-  const canCancelRunningTask = abortSignal !== undefined && !abortSignal.aborted
+  const canCancelRunningTask =
+    (abortSignal !== undefined && !abortSignal.aborted) || isLoading
   const hasQueuedCommands = queuedCommandsLength > 0
   // When in bash/background mode with empty input, escape should exit the mode
   // rather than cancel the request. Let PromptInput handle mode exit.
