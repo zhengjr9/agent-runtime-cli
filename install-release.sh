@@ -13,6 +13,7 @@ PROJECT_NAME="agent-runtime-cli"
 BIN_NAME="agent-cli"
 REPO_SLUG="zhengjr9/agent-runtime-cli"
 API_ROOT="https://api.github.com/repos/${REPO_SLUG}"
+RAW_ROOT="https://raw.githubusercontent.com/${REPO_SLUG}/main"
 DOWNLOAD_DIR="${HOME}/.agent-runtime-cli/downloads"
 INSTALL_ROOT="${AGENT_RUNTIME_CLI_HOME:-$HOME/.agent-runtime-cli}"
 INSTALL_VERSIONS_DIR="${INSTALL_ROOT}/local/versions"
@@ -53,6 +54,16 @@ download_file() {
   fi
 }
 
+url_exists() {
+  local url="$1"
+
+  if [[ "$DOWNLOADER" == "curl" ]]; then
+    curl -fsIL "$url" >/dev/null
+  else
+    wget -q --spider "$url"
+  fi
+}
+
 detect_os() {
   case "$(uname -s)" in
     Darwin) echo "darwin" ;;
@@ -82,14 +93,22 @@ resolve_version() {
   fi
 
   local json
-  json="$(download_file "${API_ROOT}/releases/latest")"
+  if json="$(download_file "${API_ROOT}/releases/latest" 2>/dev/null)"; then
+    if [[ "$HAS_JQ" == "true" ]]; then
+      echo "$json" | jq -r '.tag_name | sub("^v"; "")'
+      return 0
+    fi
 
-  if [[ "$HAS_JQ" == "true" ]]; then
-    echo "$json" | jq -r '.tag_name | sub("^v"; "")'
+    echo "$json" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"v\{0,1\}\([^"]*\)".*/\1/p' | head -n 1
     return 0
   fi
 
-  echo "$json" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"v\{0,1\}\([^"]*\)".*/\1/p' | head -n 1
+  if [[ "$HAS_JQ" == "true" ]]; then
+    download_file "${RAW_ROOT}/package.json" 2>/dev/null | jq -r '.version'
+    return 0
+  fi
+
+  download_file "${RAW_ROOT}/package.json" 2>/dev/null | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1
 }
 
 build_asset_candidates() {
@@ -189,6 +208,22 @@ pick_release_asset() {
   echo "No matching release asset found for ${os}-${arch} version ${version}" >&2
   build_asset_candidates "$version" "$os" "$arch" | sed 's/^/  - /' >&2
   exit 1
+}
+
+pick_repo_asset() {
+  local version="$1"
+  local os="$2"
+  local arch="$3"
+
+  while IFS= read -r candidate; do
+    local url="${RAW_ROOT}/release/${candidate}"
+    if url_exists "$url"; then
+      printf '%s\n%s\n' "$candidate" "$url"
+      return 0
+    fi
+  done < <(build_asset_candidates "$version" "$os" "$arch")
+
+  return 1
 }
 
 find_checksum_in_file() {
@@ -355,9 +390,24 @@ main() {
   arch="$(detect_arch)"
   version="$(resolve_version)"
 
+  if [[ -z "$version" ]]; then
+    echo "Could not resolve an installable version from GitHub Releases or repository metadata" >&2
+    exit 1
+  fi
+
   echo "Installing ${PROJECT_NAME} ${version} for ${os}-${arch}..."
 
-  mapfile -t asset_info < <(pick_release_asset "$version" "$os" "$arch")
+  local asset_info=()
+  if ! mapfile -t asset_info < <(pick_release_asset "$version" "$os" "$arch" 2>/dev/null); then
+    if ! mapfile -t asset_info < <(pick_repo_asset "$version" "$os" "$arch"); then
+      echo "No installable asset found for ${os}-${arch} version ${version}" >&2
+      exit 1
+    fi
+  fi
+  if [[ "${#asset_info[@]}" -lt 2 ]]; then
+    echo "Installer could not resolve a download URL for ${os}-${arch} version ${version}" >&2
+    exit 1
+  fi
   asset_name="${asset_info[0]}"
   download_url="${asset_info[1]}"
 

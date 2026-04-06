@@ -29,6 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/zhengjr9/agent-runtime-cli/main/ins
 脚本会：
 
 - 按当前系统和架构选择 GitHub Release 产物
+- 如果还没发布正式 GitHub Release，会回退到仓库内 `release/` 目录中的安装包
 - 优先下载并安装当前发布的离线运行包
 - 如果 release 里存在单文件二进制，也兼容安装
 - 离线运行包会安装到 `~/.agent-runtime-cli/offline/current`
